@@ -1,0 +1,23 @@
+@import "config";
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: cornflowerblue;
+}
+
+.heading {
+  background: red;
+}
+
+.clock-body {
+  background: $clock-background;
+}
+
+.clock-settings {
+  background: yellow;
+}
