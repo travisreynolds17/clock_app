@@ -13,7 +13,6 @@
     "emmet": "^1.6.3",
     "gh-pages": "^2.0.0",
     "moment": "^2.22.2",
-    "node-sass": "^4.9.3",
-    "require": "^2.4.20"
+    "node-sass": "^4.9.3"
   }
 }
