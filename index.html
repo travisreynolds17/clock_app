@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Page Title</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Orbitron" rel="stylesheet">
     <link rel="stylesheet" type="text/css" media="screen" href="dist/css/main.css" />
 
 </head>
@@ -19,14 +20,30 @@
     <main>
         <div class="heading">
 
+
         </div>
         <div class="clock-body">
 
+
+            <div class="clock-face">
+                00:00:00
+
+            </div>
+
+
         </div>
 
-        <form action="" class="clock-settings">
+        <fieldset class="clock-settings">
+            <label for="time">Clock</label>
+            <input type="radio" name="mode" id="time" checked>
+            <label for="stopwatch">Stopwatch</label>
+            <input type="radio" name="mode" id="stopwatch">
+            <label for="timer">Timer</label>
+            <input type="radio" name="mode" id="timer">
+        </fieldset>
 
-        </form>
+
+
     </main>
 
     <footer>

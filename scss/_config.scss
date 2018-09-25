@@ -1,3 +1,9 @@
 // color variables
 
 $clock-background: rgb(240, 170, 170);
+
+// mixins
+
+@mixin easeOut {
+  transition: ease-in-out 1s all;
+}

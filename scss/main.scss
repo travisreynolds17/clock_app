@@ -18,6 +18,36 @@ body {
   background: $clock-background;
 }
 
+.clock-face {
+  background: green;
+  width: 800px;
+  font-family: "Orbitron", sans-serif;
+  font-size: 8em;
+  display: flex;
+  align-content: center;
+  margin: 0 auto;
+  @include easeOut;
+
+  &.pic1 {
+    background: white;
+  }
+  &.pic2 {
+    background: wheat;
+  }
+  &.pic3 {
+    background: gold;
+  }
+  &.pic4 {
+    background: hotpink;
+  }
+  &.pic5 {
+    background: lawngreen;
+  }
+  &.pic6 {
+    background: crimson;
+  }
+}
+
 .clock-settings {
   background: yellow;
 }

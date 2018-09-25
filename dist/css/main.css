@@ -12,5 +12,27 @@ body {
 .clock-body {
   background: #f0aaaa; }
 
+.clock-face {
+  background: green;
+  width: 800px;
+  font-family: "Orbitron", sans-serif;
+  font-size: 8em;
+  display: flex;
+  align-content: center;
+  margin: 0 auto;
+  transition: ease-in-out 1s all; }
+  .clock-face.pic1 {
+    background: white; }
+  .clock-face.pic2 {
+    background: wheat; }
+  .clock-face.pic3 {
+    background: gold; }
+  .clock-face.pic4 {
+    background: hotpink; }
+  .clock-face.pic5 {
+    background: lawngreen; }
+  .clock-face.pic6 {
+    background: crimson; }
+
 .clock-settings {
   background: yellow; }
