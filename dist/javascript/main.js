@@ -24,11 +24,15 @@ let picsInit = 0;
 let ticking = true;
 let downTicking = false;
 let timerSet = false;
+let timerStopped = false;
+let timerStarted = false;
 let stopwatchSet = false;
 
 let radioDefault = true;
 
 let defaultDisplay = "00:00:00";
+
+let countDown = new Object(); // we will add properties to this fella later, but it will only function along with the timer
 
 // is it good practice to have a function that initializes stuff?
 
@@ -122,7 +126,7 @@ function populateSelects() {
 
   i = 59;
 
-  while (i > 0) {
+  while (i >= 0) {
     let shell = getShell();
     minutes.insertAdjacentHTML("afterBegin", shell);
     seconds.insertAdjacentHTML("afterBegin", shell);
@@ -141,16 +145,16 @@ function goTimer() {
 }
 function setTimer() {
   resetClock();
-  let selectHours = doubleDigits(hours.value);
-  let selectMinutes = doubleDigits(minutes.value);
-  let selectSeconds = doubleDigits(seconds.value);
+  countDown.hours = hours.value;
+  countDown.minutes = minutes.value;
+  countDown.seconds = seconds.value;
 
   let time =
-    selectHours.toString() +
+    doubleDigits(countDown.hours).toString() +
     ":" +
-    selectMinutes.toString() +
+    doubleDigits(countDown.minutes).toString() +
     ":" +
-    selectSeconds.toString();
+    doubleDigits(countDown.seconds).toString();
 
   render(time, clockFace);
 
@@ -169,28 +173,32 @@ function stopTimer() {
   downTicking = false;
   timerSet = false;
   timerStarted = false;
+  setTimerBtn.innerHTML = "Set Timer";
 }
 function downTick(selectSeconds, selectMinutes, selectHours) {
   if (downTicking) {
-    selectSeconds--;
-    if (selectSeconds < 0) {
-      selectMinutes--;
-      if (selectMinutes < 0) {
-        selectHours--;
+    countDown.seconds--;
+    if (countDown.seconds < 0) {
+      countDown.seconds = 59;
+      countDown.minutes--;
+      if (countDown.minutes < 0) {
+        countDown.minutes = 59;
+        countDown.hours--;
       }
     }
     let time =
-      doubleDigits(selectHours).toString() +
+      doubleDigits(countDown.hours).toString() +
       ":" +
-      doubleDigits(selectMinutes).toString() +
+      doubleDigits(countDown.minutes).toString() +
       ":" +
-      doubleDigits(selectSeconds).toString();
+      doubleDigits(countDown.seconds).toString();
 
     render(time, clockFace);
 
     if (time === "00:00:00") {
       render("TIME", clockFace);
       downTicking = false;
+      timerStopped = true;
     }
   }
 }
