@@ -21,25 +21,36 @@ const picsClass = ["pic1", "pic2", "pic3", "pic4", "pic5", "pic6"];
 // time in seconds between clockface background changes
 let picsTime = 10;
 let picsInit = 0;
+
+// variables to handle clock duties
 let ticking = true;
 let downTicking = false;
+let upTicking = false;
 let timerSet = false;
 let timerStopped = false;
 let timerStarted = false;
 let stopwatchSet = false;
+let stopwatchStarted = false;
+// variables to store interval handlers
+let handlers = [
+  window.setInterval(upTick, 1000),
+  window.setInterval(downTick, 1000),
+  window.setInterval(tick, 1000)
+];
 
 let radioDefault = true;
 
 let defaultDisplay = "00:00:00";
 
 let countDown = new Object(); // we will add properties to this fella later, but it will only function along with the timer
+let currentTime = new Date();
 
 // is it good practice to have a function that initializes stuff?
 
 function init() {
   reset.addEventListener("click", resetClock);
   setTimerBtn.addEventListener("click", goTimer);
-  setStopwatchBtn.addEventListener("click", setStopwatch);
+  setStopwatchBtn.addEventListener("click", goStopwatch);
   setClockBtn.addEventListener("click", setClock);
   window.setInterval(tick, 1000);
   populateSelects();
@@ -60,11 +71,10 @@ function render(template, node) {
 function doubleDigits(increment) {
   if (increment < 10) {
     increment = "0" + increment.toString();
-    return increment;
   } else {
     increment.toString();
-    return increment;
   }
+  return increment;
 }
 
 // write a function that adds new picture to clock face
@@ -84,13 +94,11 @@ function clockPic() {
 // Write a function that updates current date object every second and calls picture changing function
 function tick() {
   if (ticking) {
-    let currentTime = new Date();
-    let setHours = doubleDigits(currentTime.getHours());
-    let setMinutes = doubleDigits(currentTime.getMinutes());
-    let setSeconds = doubleDigits(currentTime.getSeconds());
+    countDown.hours = currentTime.getHours();
+    countDown.minutes = currentTime.getMinutes();
+    countDown.seconds = currentTime.getSeconds();
 
-    let time = setHours + ":" + setMinutes + ":" + setSeconds;
-    render("It is now " + time.toString(), clockFace);
+    formatHours();
     picsInit++;
     if (picsInit == picsTime) {
       clockPic();
@@ -102,10 +110,19 @@ function resetClock() {
   ticking = false;
   stopwatchSet = false;
   downTicking = false;
+  upTicking = false;
   timerSet = false;
   timerStarted = false;
 
   clockFace.innerHTML = defaultDisplay;
+  countDown.hours = 0;
+  countDown.minutes = 0;
+  countDown.seconds = 0;
+
+  // clear intervals
+  for (var i = 0; i < handlers.length; i++) {
+    clearInterval(handlers[i]);
+  }
   radioButtons.forEach(item => {
     item.checked = false;
   });
@@ -143,23 +160,30 @@ function goTimer() {
     stopTimer();
   }
 }
+
+function goStopwatch() {
+  if (!stopwatchSet) {
+    setStopwatch();
+  } else {
+    stopStopwatch();
+  }
+}
 function setTimer() {
   resetClock();
   countDown.hours = hours.value;
   countDown.minutes = minutes.value;
   countDown.seconds = seconds.value;
 
-  let time =
-    doubleDigits(countDown.hours).toString() +
-    ":" +
-    doubleDigits(countDown.minutes).toString() +
-    ":" +
-    doubleDigits(countDown.seconds).toString();
+  var test = countDown.hours + countDown.minutes + countDown.seconds;
 
-  render(time, clockFace);
+  if (test > 0) {
+    formatHours();
 
-  timerSet = true;
-  setTimerBtn.innerHTML = "Start Timer";
+    timerSet = true;
+    setTimerBtn.innerHTML = "Start Timer";
+  } else {
+    alert("Please set a time greater than zero seconds");
+  }
 }
 
 function startTimer() {
@@ -175,7 +199,7 @@ function stopTimer() {
   timerStarted = false;
   setTimerBtn.innerHTML = "Set Timer";
 }
-function downTick(selectSeconds, selectMinutes, selectHours) {
+function downTick() {
   if (downTicking) {
     countDown.seconds--;
     if (countDown.seconds < 0) {
@@ -186,25 +210,68 @@ function downTick(selectSeconds, selectMinutes, selectHours) {
         countDown.hours--;
       }
     }
-    let time =
-      doubleDigits(countDown.hours).toString() +
-      ":" +
-      doubleDigits(countDown.minutes).toString() +
-      ":" +
-      doubleDigits(countDown.seconds).toString();
-
-    render(time, clockFace);
+    formatHours();
 
     if (time === "00:00:00") {
       render("TIME", clockFace);
-      downTicking = false;
       timerStopped = true;
+      stopTimer();
     }
   }
 }
 
-function setStopwatch() {}
+function formatHours() {
+  var display =
+    doubleDigits(countDown.hours).toString() +
+    ":" +
+    doubleDigits(countDown.minutes).toString() +
+    ":" +
+    doubleDigits(countDown.seconds).toString();
+  render(display, clockFace);
+}
 
+function setStopwatch() {
+  resetClock();
+  formatHours();
+  window.setInterval(upTick, 1000);
+  upTicking = true;
+  stopwatchSet = true;
+
+  setStopwatchBtn.innerHTML = "Stop watch";
+}
+function stopStopwatch() {
+  var hours = countDown.hours;
+  var minutes = countDown.minutes;
+  var seconds = countDown.seconds;
+
+  var display =
+    doubleDigits(hours).toString() +
+    ":" +
+    doubleDigits(minutes).toString() +
+    ":" +
+    doubleDigits(seconds).toString();
+  render(display, clockFace);
+  // we can't call formatHours() here because we want the time to remain on display.
+  upTicking = false;
+  stopwatchSet = false;
+  setStopwatchBtn.innerHTML = "Start watch";
+  resetClock();
+}
+
+function upTick() {
+  if (upTicking) {
+    countDown.seconds++;
+    if (countDown.seconds > 59) {
+      countDown.seconds = 0;
+      countDown.minutes++;
+      if (countDown.minutes > 59) {
+        countDown.minutes = 0;
+        countDown.hours++;
+      }
+    }
+    formatHours();
+  }
+}
 function setClock() {}
 
 init();
