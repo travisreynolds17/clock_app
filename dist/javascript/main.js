@@ -32,11 +32,9 @@ let timerStarted = false;
 let stopwatchSet = false;
 let stopwatchStarted = false;
 // variables to store interval handlers
-let handlers = [
-  window.setInterval(upTick, 1000),
-  window.setInterval(downTick, 1000),
-  window.setInterval(tick, 1000)
-];
+var handlerUp;
+var handlerDown;
+var handlerTick;
 
 let radioDefault = true;
 
@@ -52,7 +50,7 @@ function init() {
   setTimerBtn.addEventListener("click", goTimer);
   setStopwatchBtn.addEventListener("click", goStopwatch);
   setClockBtn.addEventListener("click", setClock);
-  window.setInterval(tick, 1000);
+  tick();
   populateSelects();
 }
 
@@ -94,6 +92,7 @@ function clockPic() {
 // Write a function that updates current date object every second and calls picture changing function
 function tick() {
   if (ticking) {
+    handlerTick = window.setInterval(tick, 1000);
     countDown.hours = currentTime.getHours();
     countDown.minutes = currentTime.getMinutes();
     countDown.seconds = currentTime.getSeconds();
@@ -120,9 +119,11 @@ function resetClock() {
   countDown.seconds = 0;
 
   // clear intervals
-  for (var i = 0; i < handlers.length; i++) {
-    clearInterval(handlers[i]);
-  }
+
+  window.clearInterval(handlerDown);
+  window.clearInterval(handlerUp);
+  window.clearInterval(handlerTick);
+
   radioButtons.forEach(item => {
     item.checked = false;
   });
@@ -161,13 +162,6 @@ function goTimer() {
   }
 }
 
-function goStopwatch() {
-  if (!stopwatchSet) {
-    setStopwatch();
-  } else {
-    stopStopwatch();
-  }
-}
 function setTimer() {
   resetClock();
   countDown.hours = hours.value;
@@ -187,7 +181,7 @@ function setTimer() {
 }
 
 function startTimer() {
-  window.setInterval(downTick, 1000);
+  handlerDown = window.setInterval(downTick, 1000);
   downTicking = true;
   timerStarted = true;
   setTimerBtn.innerHTML = "Stop Timer";
@@ -230,10 +224,17 @@ function formatHours() {
   render(display, clockFace);
 }
 
+function goStopwatch() {
+  if (stopwatchSet == false) {
+    setStopwatch();
+  } else {
+    stopStopwatch();
+  }
+}
 function setStopwatch() {
   resetClock();
   formatHours();
-  window.setInterval(upTick, 1000);
+  handlerUp = window.setInterval(upTick, 1000);
   upTicking = true;
   stopwatchSet = true;
 
@@ -250,12 +251,13 @@ function stopStopwatch() {
     doubleDigits(minutes).toString() +
     ":" +
     doubleDigits(seconds).toString();
-  render(display, clockFace);
+
   // we can't call formatHours() here because we want the time to remain on display.
   upTicking = false;
   stopwatchSet = false;
   setStopwatchBtn.innerHTML = "Start watch";
   resetClock();
+  render(display, clockFace);
 }
 
 function upTick() {
@@ -272,6 +274,10 @@ function upTick() {
     formatHours();
   }
 }
-function setClock() {}
+function setClock() {
+  resetClock();
+  ticking = true;
+  tick();
+}
 
 init();
