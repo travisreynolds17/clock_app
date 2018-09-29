@@ -33,17 +33,26 @@
 
         </div>
 
-        <fieldset class="clock-settings">
-            <label for="time">Clock</label>
-            <input type="radio" name="mode" id="time" checked>
-            <label for="stopwatch">Stopwatch</label>
-            <input type="radio" name="mode" id="stopwatch">
-            <label for="timer">Timer</label>
-            <input type="radio" name="mode" id="timer">
-            <button class="reset">Reset Clock</button>
-        </fieldset>
+        <div>
+            <button id="clock">Clock</button>
+            <button id="timer">Timer</button>
+            <button id="stopwatch">Stopwatch</button>
+            <button id="reset">Reset</button>
+        </div>
 
-        <div class="timer-settings">
+        <div class="timer-control">
+            <button class="clock hidden">
+                Start Clock
+            </button>
+            <button class="timer hidden">
+                Set Timer
+            </button>
+            <button class="stopwatch hidden">
+                Start Stopwatch
+            </button>
+        </div>
+
+        <div class="timer-settings hidden">
             <label for="hours"></label>
             <select name="hours" id="hours"></select>
             <label for="minutes"></label>
@@ -52,17 +61,7 @@
             <select name="seconds" id="seconds"></select>
         </div>
 
-        <div class="timer-control">
-            <button class="clock">
-                Start Clock
-            </button>
-            <button class="timer">
-                Set Timer
-            </button>
-            <button class="stopwatch">
-                Start Stopwatch
-            </button>
-        </div>
+
 
 
 

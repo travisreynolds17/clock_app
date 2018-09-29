@@ -13,7 +13,7 @@ body {
   background: #f0aaaa; }
 
 .clock-face {
-  background: #61B0B0;
+  background: #61b0b0;
   width: 800px;
   font-family: "Orbitron", sans-serif;
   font-size: 8em;
@@ -36,3 +36,7 @@ body {
 
 .clock-settings {
   background: yellow; }
+
+.hidden {
+  display: none;
+  transition: ease-in-out 1s all; }

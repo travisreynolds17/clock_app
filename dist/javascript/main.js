@@ -5,9 +5,14 @@
 // DOM selection
 const heading = document.querySelector(".heading");
 const clockFace = document.querySelector(".clock-face");
-const clockRadio = document.querySelector(".clock-settings");
-const radioButtons = document.querySelectorAll(".clock-settings input");
-const reset = document.querySelector(".reset");
+
+// button selectors
+// toggles
+const reset = document.querySelector("#reset");
+const timerBtn = document.querySelector("#timer");
+const clockBtn = document.querySelector("#clock");
+const stopwatchBtn = document.querySelector("#stopwatch");
+//set/start buttons
 const setTimerBtn = document.querySelector(".timer");
 const setStopwatchBtn = document.querySelector(".stopwatch");
 const setClockBtn = document.querySelector(".clock");
@@ -15,6 +20,7 @@ const setClockBtn = document.querySelector(".clock");
 const hours = document.querySelector("#hours");
 const minutes = document.querySelector("#minutes");
 const seconds = document.querySelector("#seconds");
+const timerSettings = document.querySelector(".timer-settings");
 
 // array of class names to be randomized for clockface picture
 const picsClass = ["pic1", "pic2", "pic3", "pic4", "pic5", "pic6"];
@@ -23,9 +29,6 @@ let picsTime = 10;
 let picsInit = 0;
 
 // variables to handle clock duties
-let ticking = true;
-let downTicking = false;
-let upTicking = false;
 let timerSet = false;
 let timerStopped = false;
 let timerStarted = false;
@@ -50,7 +53,14 @@ function init() {
   setTimerBtn.addEventListener("click", goTimer);
   setStopwatchBtn.addEventListener("click", goStopwatch);
   setClockBtn.addEventListener("click", setClock);
-  tick();
+
+  clockBtn.addEventListener("click", toggle);
+  timerBtn.addEventListener("click", toggle);
+  stopwatchBtn.addEventListener("click", toggle);
+
+  // start clock ticking
+  handlerTick = window.setInterval(tick, 1000);
+
   populateSelects();
 }
 
@@ -91,25 +101,20 @@ function clockPic() {
 
 // Write a function that updates current date object every second and calls picture changing function
 function tick() {
-  if (ticking) {
-    handlerTick = window.setInterval(tick, 1000);
-    countDown.hours = currentTime.getHours();
-    countDown.minutes = currentTime.getMinutes();
-    countDown.seconds = currentTime.getSeconds();
+  console.log("a");
+  countDown.hours = currentTime.getHours();
+  countDown.minutes = currentTime.getMinutes();
+  countDown.seconds = currentTime.getSeconds();
 
-    formatHours();
-    picsInit++;
-    if (picsInit == picsTime) {
-      clockPic();
-    }
+  formatHours();
+  picsInit++;
+  if (picsInit == picsTime) {
+    clockPic();
   }
 }
 
 function resetClock() {
-  ticking = false;
   stopwatchSet = false;
-  downTicking = false;
-  upTicking = false;
   timerSet = false;
   timerStarted = false;
 
@@ -123,12 +128,9 @@ function resetClock() {
   window.clearInterval(handlerDown);
   window.clearInterval(handlerUp);
   window.clearInterval(handlerTick);
-
-  radioButtons.forEach(item => {
-    item.checked = false;
-  });
 }
 
+// function inserts <select> options used to set timer
 function populateSelects() {
   let i = 23;
   function getShell() {
@@ -182,35 +184,32 @@ function setTimer() {
 
 function startTimer() {
   handlerDown = window.setInterval(downTick, 1000);
-  downTicking = true;
   timerStarted = true;
   setTimerBtn.innerHTML = "Stop Timer";
 }
 
 function stopTimer() {
-  downTicking = false;
   timerSet = false;
   timerStarted = false;
   setTimerBtn.innerHTML = "Set Timer";
 }
 function downTick() {
-  if (downTicking) {
-    countDown.seconds--;
-    if (countDown.seconds < 0) {
-      countDown.seconds = 59;
-      countDown.minutes--;
-      if (countDown.minutes < 0) {
-        countDown.minutes = 59;
-        countDown.hours--;
-      }
+  console.log("b");
+  countDown.seconds--;
+  if (countDown.seconds < 0) {
+    countDown.seconds = 59;
+    countDown.minutes--;
+    if (countDown.minutes < 0) {
+      countDown.minutes = 59;
+      countDown.hours--;
     }
-    formatHours();
+  }
+  formatHours();
 
-    if (time === "00:00:00") {
-      render("TIME", clockFace);
-      timerStopped = true;
-      stopTimer();
-    }
+  if (time === "00:00:00") {
+    render("TIME", clockFace);
+    timerStopped = true;
+    stopTimer();
   }
 }
 
@@ -235,7 +234,6 @@ function setStopwatch() {
   resetClock();
   formatHours();
   handlerUp = window.setInterval(upTick, 1000);
-  upTicking = true;
   stopwatchSet = true;
 
   setStopwatchBtn.innerHTML = "Stop watch";
@@ -253,7 +251,6 @@ function stopStopwatch() {
     doubleDigits(seconds).toString();
 
   // we can't call formatHours() here because we want the time to remain on display.
-  upTicking = false;
   stopwatchSet = false;
   setStopwatchBtn.innerHTML = "Start watch";
   resetClock();
@@ -261,23 +258,44 @@ function stopStopwatch() {
 }
 
 function upTick() {
-  if (upTicking) {
-    countDown.seconds++;
-    if (countDown.seconds > 59) {
-      countDown.seconds = 0;
-      countDown.minutes++;
-      if (countDown.minutes > 59) {
-        countDown.minutes = 0;
-        countDown.hours++;
-      }
+  console.log("c");
+  countDown.seconds++;
+  if (countDown.seconds > 59) {
+    countDown.seconds = 0;
+    countDown.minutes++;
+    if (countDown.minutes > 59) {
+      countDown.minutes = 0;
+      countDown.hours++;
     }
+
     formatHours();
   }
 }
 function setClock() {
   resetClock();
-  ticking = true;
   tick();
+}
+
+// function to show or hide settings for each clock setting
+function toggle() {
+  var clicked = this.id.toLowerCase();
+
+  if (clicked == "clock") {
+    setClockBtn.classList.remove("hidden");
+    setTimerBtn.classList.add("hidden");
+    setStopwatchBtn.classList.add("hidden");
+    timerSettings.classList.add("hidden");
+  } else if (clicked == "timer") {
+    setClockBtn.classList.add("hidden");
+    setTimerBtn.classList.remove("hidden");
+    setStopwatchBtn.classList.add("hidden");
+    timerSettings.classList.remove("hidden");
+  } else {
+    setClockBtn.classList.add("hidden");
+    setTimerBtn.classList.add("hidden");
+    setStopwatchBtn.classList.remove("hidden");
+    timerSettings.classList.add("hidden");
+  }
 }
 
 init();
