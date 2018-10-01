@@ -13,9 +13,10 @@ const timerBtn = document.querySelector("#timer");
 const clockBtn = document.querySelector("#clock");
 const stopwatchBtn = document.querySelector("#stopwatch");
 //set/start buttons
-const setTimerBtn = document.querySelector(".timer");
-const setStopwatchBtn = document.querySelector(".stopwatch");
-const setClockBtn = document.querySelector(".clock");
+
+let goButton = new Object();
+goButton.select = document.querySelector(".go");
+goButton.state = "clock";
 // selectors for dropdown menus for timer and stopwatch
 const hours = document.querySelector("#hours");
 const minutes = document.querySelector("#minutes");
@@ -50,9 +51,6 @@ let currentTime = new Date();
 
 function init() {
   reset.addEventListener("click", resetClock);
-  setTimerBtn.addEventListener("click", goTimer);
-  setStopwatchBtn.addEventListener("click", goStopwatch);
-  setClockBtn.addEventListener("click", setClock);
 
   clockBtn.addEventListener("click", toggle);
   timerBtn.addEventListener("click", toggle);
@@ -114,9 +112,7 @@ function tick() {
 }
 
 function resetClock() {
-  stopwatchSet = false;
-  timerSet = false;
-  timerStarted = false;
+  goButton.select.state = "clock";
 
   clockFace.innerHTML = defaultDisplay;
   countDown.hours = 0;
@@ -155,9 +151,9 @@ function populateSelects() {
 }
 
 function goTimer() {
-  if (!timerSet) {
+  if ((this.state = "timer")) {
     setTimer();
-  } else if (!timerStarted) {
+  } else if ((this.state = "timer set")) {
     startTimer();
   } else {
     stopTimer();
@@ -175,8 +171,8 @@ function setTimer() {
   if (test > 0) {
     formatHours();
 
-    timerSet = true;
-    setTimerBtn.innerHTML = "Start Timer";
+    this.state = "timer set";
+    this.innerHTML = "Start Timer";
   } else {
     alert("Please set a time greater than zero seconds");
   }
@@ -184,14 +180,13 @@ function setTimer() {
 
 function startTimer() {
   handlerDown = window.setInterval(downTick, 1000);
-  timerStarted = true;
-  setTimerBtn.innerHTML = "Stop Timer";
+  this.state = "timer started";
+  this.innerHTML = "Stop Timer";
 }
 
 function stopTimer() {
-  timerSet = false;
-  timerStarted = false;
-  setTimerBtn.innerHTML = "Set Timer";
+  this.state = "timer";
+  this.innerHTML = "Set Timer";
 }
 function downTick() {
   console.log("b");
@@ -224,7 +219,7 @@ function formatHours() {
 }
 
 function goStopwatch() {
-  if (stopwatchSet == false) {
+  if (this.state != "stopwatch set") {
     setStopwatch();
   } else {
     stopStopwatch();
@@ -234,9 +229,8 @@ function setStopwatch() {
   resetClock();
   formatHours();
   handlerUp = window.setInterval(upTick, 1000);
-  stopwatchSet = true;
-
-  setStopwatchBtn.innerHTML = "Stop watch";
+  this.state = "stopwatch set";
+  this.innerHTML = "Stop";
 }
 function stopStopwatch() {
   var hours = countDown.hours;
@@ -251,8 +245,8 @@ function stopStopwatch() {
     doubleDigits(seconds).toString();
 
   // we can't call formatHours() here because we want the time to remain on display.
-  stopwatchSet = false;
-  setStopwatchBtn.innerHTML = "Start watch";
+  this.state = "stopwatch";
+  this.innerHTML = "Start watch";
   resetClock();
   render(display, clockFace);
 }
@@ -281,20 +275,26 @@ function toggle() {
   var clicked = this.id.toLowerCase();
 
   if (clicked == "clock") {
-    setClockBtn.classList.remove("hidden");
-    setTimerBtn.classList.add("hidden");
-    setStopwatchBtn.classList.add("hidden");
-    timerSettings.classList.add("hidden");
+    timerSettings.classList.remove("show");
+    goButton.select.innerHTML = "Set Clock";
+    goButton.select.state = "clock";
+    goButton.select.addEventListener("click", setClock);
+    goButton.select.removeEventListener("click", goTimer);
+    goButton.select.removeEventListener("click", goStopwatch);
   } else if (clicked == "timer") {
-    setClockBtn.classList.add("hidden");
-    setTimerBtn.classList.remove("hidden");
-    setStopwatchBtn.classList.add("hidden");
-    timerSettings.classList.remove("hidden");
+    goButton.select.innerHTML = "Set Timer";
+    goButton.select.state = "timer";
+    timerSettings.classList.add("show");
+    goButton.select.addEventListener("click", goTimer);
+    goButton.select.removeEventListener("click", goStopwatch);
+    goButton.select.removeEventListener("click", setClock);
   } else {
-    setClockBtn.classList.add("hidden");
-    setTimerBtn.classList.add("hidden");
-    setStopwatchBtn.classList.remove("hidden");
-    timerSettings.classList.add("hidden");
+    timerSettings.classList.remove("show");
+    goButton.select.innerHTML = "Set Stopwatch";
+    goButton.select.state = "stopwatch";
+    goButton.select.addEventListener("click", goStopwatch);
+    goButton.select.removeEventListener("click", goTimer);
+    goButton.select.removeEventListener("click", setClock);
   }
 }
 

@@ -37,6 +37,31 @@ body {
 .clock-settings {
   background: yellow; }
 
-.hidden {
-  display: none;
-  transition: ease-in-out 1s all; }
+.timer-control button {
+  border-radius: 50%;
+  background: #fefefe;
+  padding: 20px;
+  width: 250px;
+  height: 250px; }
+
+.control-body {
+  display: grid;
+  grid-template-areas: "mode mode mode mode" ".. control control ..";
+  align-content: center; }
+  .control-body .mode-controls {
+    display: flex;
+    grid-area: mode;
+    margin: 0 auto;
+    padding-bottom: 10px; }
+    .control-body .mode-controls button {
+      padding: 20px;
+      min-width: 200px;
+      max-width: 200px;
+      margin: 0 auto; }
+  .control-body .timer-settings {
+    grid-area: control;
+    padding-bottom: 10px; }
+    .control-body .timer-settings select {
+      height: 20px; }
+    .control-body .timer-settings button {
+      padding: 20px; }

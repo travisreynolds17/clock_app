@@ -8,6 +8,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://fonts.googleapis.com/css?family=Orbitron" rel="stylesheet">
     <link rel="stylesheet" type="text/css" media="screen" href="dist/css/main.css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ"
+        crossorigin="anonymous">
 
 </head>
 
@@ -32,35 +34,33 @@
 
 
         </div>
+        <div class="control-body">
 
-        <div>
-            <button id="clock">Clock</button>
-            <button id="timer">Timer</button>
-            <button id="stopwatch">Stopwatch</button>
-            <button id="reset">Reset</button>
+            <div class="mode-controls">
+                <button id="clock"><i class="fas fa-clock"></i>Clock</button>
+                <button id="timer"><i class="fas fa-dot-circle"></i>Timer</button>
+                <button id="stopwatch"><i class="fas fa-stopwatch"></i>Stopwatch</button>
+                <button id="reset"><i class="fas fa-undo"></i>Reset</button>
+            </div>
+
+            <div class="timer-control">
+                <button class="go">
+                    Set Clock
+                </button>
+
+
+                <div class="timer-settings">
+                    <label for="hours"></label>
+                    <select name="hours" id="hours"></select>
+                    <label for="minutes"></label>
+                    <select name="minutes" id="minutes"></select>
+                    <label for="seconds"></label>
+                    <select name="seconds" id="seconds"></select>
+                </div>
+            </div>
+
+
         </div>
-
-        <div class="timer-control">
-            <button class="clock hidden">
-                Start Clock
-            </button>
-            <button class="timer hidden">
-                Set Timer
-            </button>
-            <button class="stopwatch hidden">
-                Start Stopwatch
-            </button>
-        </div>
-
-        <div class="timer-settings hidden">
-            <label for="hours"></label>
-            <select name="hours" id="hours"></select>
-            <label for="minutes"></label>
-            <select name="minutes" id="minutes"></select>
-            <label for="seconds"></label>
-            <select name="seconds" id="seconds"></select>
-        </div>
-
 
 
 
