@@ -15,8 +15,9 @@ const stopwatchBtn = document.querySelector("#stopwatch");
 //set/start buttons
 
 let goButton = new Object();
-goButton.select = document.querySelector(".go");
-goButton.state = "clock";
+goButton = document.querySelector(".go");
+state = "clock"; //default
+
 // selectors for dropdown menus for timer and stopwatch
 const hours = document.querySelector("#hours");
 const minutes = document.querySelector("#minutes");
@@ -29,18 +30,8 @@ const picsClass = ["pic1", "pic2", "pic3", "pic4", "pic5", "pic6"];
 let picsTime = 10;
 let picsInit = 0;
 
-// variables to handle clock duties
-let timerSet = false;
-let timerStopped = false;
-let timerStarted = false;
-let stopwatchSet = false;
-let stopwatchStarted = false;
 // variables to store interval handlers
-var handlerUp;
-var handlerDown;
-var handlerTick;
-
-let radioDefault = true;
+let interval;
 
 let defaultDisplay = "00:00:00";
 
@@ -55,9 +46,10 @@ function init() {
   clockBtn.addEventListener("click", toggle);
   timerBtn.addEventListener("click", toggle);
   stopwatchBtn.addEventListener("click", toggle);
+  goButton.addEventListener("click", goBtn);
 
   // start clock ticking
-  handlerTick = window.setInterval(tick, 1000);
+  interval = window.setInterval(tick, 1000);
 
   populateSelects();
 }
@@ -100,6 +92,7 @@ function clockPic() {
 // Write a function that updates current date object every second and calls picture changing function
 function tick() {
   console.log("a");
+  currentTime = new Date();
   countDown.hours = currentTime.getHours();
   countDown.minutes = currentTime.getMinutes();
   countDown.seconds = currentTime.getSeconds();
@@ -112,7 +105,8 @@ function tick() {
 }
 
 function resetClock() {
-  goButton.select.state = "clock";
+  state = "clock";
+  goButton.innerHTML = "Set Clock";
 
   clockFace.innerHTML = defaultDisplay;
   countDown.hours = 0;
@@ -121,9 +115,7 @@ function resetClock() {
 
   // clear intervals
 
-  window.clearInterval(handlerDown);
-  window.clearInterval(handlerUp);
-  window.clearInterval(handlerTick);
+  window.clearInterval(interval);
 }
 
 // function inserts <select> options used to set timer
@@ -151,9 +143,9 @@ function populateSelects() {
 }
 
 function goTimer() {
-  if ((this.state = "timer")) {
+  if (state == "timer") {
     setTimer();
-  } else if ((this.state = "timer set")) {
+  } else if (state == "timer set") {
     startTimer();
   } else {
     stopTimer();
@@ -171,22 +163,23 @@ function setTimer() {
   if (test > 0) {
     formatHours();
 
-    this.state = "timer set";
-    this.innerHTML = "Start Timer";
+    state = "timer set";
+    goButton.innerHTML = "Start Timer";
   } else {
     alert("Please set a time greater than zero seconds");
   }
 }
 
 function startTimer() {
-  handlerDown = window.setInterval(downTick, 1000);
-  this.state = "timer started";
-  this.innerHTML = "Stop Timer";
+  interval = window.setInterval(downTick, 1000);
+  state = "timer started";
+  goButton.innerHTML = "Stop Timer";
 }
 
 function stopTimer() {
-  this.state = "timer";
-  this.innerHTML = "Set Timer";
+  state = "timer";
+  goButton.innerHTML = "Set Timer";
+  resetClock();
 }
 function downTick() {
   console.log("b");
@@ -199,7 +192,7 @@ function downTick() {
       countDown.hours--;
     }
   }
-  formatHours();
+  time = formatHours();
 
   if (time === "00:00:00") {
     render("TIME", clockFace);
@@ -216,21 +209,15 @@ function formatHours() {
     ":" +
     doubleDigits(countDown.seconds).toString();
   render(display, clockFace);
+  return display;
 }
 
-function goStopwatch() {
-  if (this.state != "stopwatch set") {
-    setStopwatch();
-  } else {
-    stopStopwatch();
-  }
-}
 function setStopwatch() {
   resetClock();
   formatHours();
-  handlerUp = window.setInterval(upTick, 1000);
-  this.state = "stopwatch set";
-  this.innerHTML = "Stop";
+  interval = window.setInterval(upTick, 1000);
+  state = "stopwatch set";
+  goButton.innerHTML = "Stop";
 }
 function stopStopwatch() {
   var hours = countDown.hours;
@@ -245,8 +232,8 @@ function stopStopwatch() {
     doubleDigits(seconds).toString();
 
   // we can't call formatHours() here because we want the time to remain on display.
-  this.state = "stopwatch";
-  this.innerHTML = "Start watch";
+  state = "stopwatch";
+  goButton.innerHTML = "Start watch";
   resetClock();
   render(display, clockFace);
 }
@@ -261,40 +248,66 @@ function upTick() {
       countDown.minutes = 0;
       countDown.hours++;
     }
-
-    formatHours();
   }
+
+  var display = formatHours();
+  console.log(display);
 }
+// returns clock to time display
 function setClock() {
   resetClock();
-  tick();
+  interval = window.setInterval(tick, 1000);
+  goButton.innerHTML = "Set Clock";
 }
 
-// function to show or hide settings for each clock setting
+// function toggles which functionality is in use
 function toggle() {
   var clicked = this.id.toLowerCase();
 
-  if (clicked == "clock") {
+  if (clicked != "timer") {
     timerSettings.classList.remove("show");
-    goButton.select.innerHTML = "Set Clock";
-    goButton.select.state = "clock";
-    goButton.select.addEventListener("click", setClock);
-    goButton.select.removeEventListener("click", goTimer);
-    goButton.select.removeEventListener("click", goStopwatch);
-  } else if (clicked == "timer") {
-    goButton.select.innerHTML = "Set Timer";
-    goButton.select.state = "timer";
-    timerSettings.classList.add("show");
-    goButton.select.addEventListener("click", goTimer);
-    goButton.select.removeEventListener("click", goStopwatch);
-    goButton.select.removeEventListener("click", setClock);
   } else {
-    timerSettings.classList.remove("show");
-    goButton.select.innerHTML = "Set Stopwatch";
-    goButton.select.state = "stopwatch";
-    goButton.select.addEventListener("click", goStopwatch);
-    goButton.select.removeEventListener("click", goTimer);
-    goButton.select.removeEventListener("click", setClock);
+    timerSettings.classList.add("show");
+    goButton.innerHTML = "Set Timer";
+  }
+  if (clicked == "clock") goButton.innerHTML = "Set Clock";
+
+  if (clicked == "stopwatch") goButton.innerHTML = "Set Stopwatch";
+
+  state = clicked;
+}
+
+function setBtnHTML(state) {}
+
+function goBtn() {
+  switch (state) {
+    case "clock":
+      setClock();
+      break;
+
+    case "timer":
+      setTimer();
+      break;
+
+    case "timer set":
+      startTimer();
+      break;
+
+    case "timer started":
+      stopTimer();
+      break;
+
+    case "stopwatch":
+      setStopwatch();
+      break;
+
+    case "stopwatch set":
+      stopStopwatch();
+      break;
+
+    default:
+      console.log("something went wrong");
+      break;
   }
 }
 
